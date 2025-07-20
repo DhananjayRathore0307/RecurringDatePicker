@@ -13,7 +13,23 @@ const MiniCalendarPreview = () => {
   let count = 0;
 
   while ((!end || isBefore(current, end)) && count < 30) {
-    dates.push(format(current, "yyyy-MM-dd"));
+    if(recurrence === "weekly"){
+      for(let i = 0; i < 7; i++){
+        const dayToCheck = addDays(current, i);
+        const dayIndex = dayToCheck.getDay();
+
+        if(
+          (!end || isBefore(dayToCheck, end)) && 
+          customOptions.days?.includes(dayIndex)
+        ){
+          dates.push(format(dayToCheck, "yyyy-MM-dd"));
+          if (dates.length >= 30) break;
+        }
+      }
+      current = addWeeks(current,customOptions.interval || 1);
+    }
+    else{
+      dates.push(format(current, "yyyy-MM-dd"));
 
     switch (recurrence) {
       case "daily":
@@ -29,6 +45,7 @@ const MiniCalendarPreview = () => {
         current = addYears(current, customOptions.interval || 1);
         break;
     }
+  }
 
     count++;
   }
